@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Resume Analyzer</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- For dev without flask, fallbacks: -->
+    <!-- <link rel="stylesheet" href="../static/css/style.css"> -->
+</head>
+<body>
+
+    <div class="container pb-5">
+        <!-- Header Section -->
+        <header class="header-section">
+            <h1 class="header-title">AI Resume Analyzer</h1>
+            <p class="header-subtitle">
+                Analyze your resume, calculate ATS score, identify missing skills, and get personalized recommendations.
+            </p>
+        </header>
+
+        <!-- Main Layout -->
+        <form id="analyzerForm" action="/analyze" method="POST" enctype="multipart/form-data">
+            <div class="row g-4">
+                
+                <!-- Left Card: Upload Resume -->
+                <div class="col-lg-6">
+                    <div class="custom-card">
+                        <h2 class="card-title">Upload Your Resume</h2>
+                        <p class="card-description">Upload your resume in PDF format.</p>
+                        
+                        <div class="upload-area" id="uploadArea">
+                            <input type="file" name="resume" id="resume" class="file-input" accept=".pdf" required>
+                            <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
+                            <h3 class="upload-text">Drag and drop your PDF or click to select</h3>
+                            <p class="upload-support">PDF files up to 10 MB</p>
+                            <div id="file-name"></div>
+                        </div>
+                        
+                        <!-- Extra button if needed to trigger something, but we use form submit on the right or a dedicated button here?
+                             Prompt says:
+                             Left Card: Upload button: "Extract Resume"
+                             Right Card: Primary button: "Analyze Resume" -->
+                        <div class="mt-4 text-center d-none" id="extractBtnContainer">
+                             <button type="button" class="btn btn-outline-primary w-100" id="extractBtn">Extract Resume Text (Optional)</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Card: Job Details -->
+                <div class="col-lg-6">
+                    <div class="custom-card">
+                        <h2 class="card-title">Target Job Details</h2>
+                        <p class="card-description">Provide information about the target job.</p>
+                        
+                        <div class="mb-3">
+                            <label for="jobTitle" class="form-label">Job Title</label>
+                            <input type="text" class="form-control" id="jobTitle" name="jobTitle" placeholder="e.g. Python Developer" required>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="jobDescription" class="form-label">Job Description</label>
+                            <textarea class="form-control" id="jobDescription" name="jobDescription" placeholder="Paste the complete job description here..." required></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 btn-lg" id="analyzeBtn">
+                            <i class="fa-solid fa-magnifying-glass-chart me-2"></i>Analyze Resume
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </form>
+    </div>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <!-- <script src="../static/js/main.js"></script> -->
+</body>
+</html>
