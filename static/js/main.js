@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.body.addEventListener(eventName, preventDefaults, false);
         });
 
+        
         function preventDefaults(e) {
             e.preventDefault();
             e.stopPropagation();
