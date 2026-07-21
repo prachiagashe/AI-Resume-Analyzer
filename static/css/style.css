@@ -1,7 +1,7 @@
 :root {
   --primary-color: #2563EB;
   --primary-hover: #1D4ED8;
-  --bg-color: #f3f4f6;
+  --bg-color: #f8fafc;
   --text-main: #1f2937;
   --text-muted: #6b7280;
   --card-bg: #ffffff;
@@ -9,10 +9,11 @@
 }
 
 body {
-  background-color: var(--bg-color);
-  color: var(--text-main);
+  
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   min-height: 100vh;
+  background-color: var(--bg-color);
+  color: var(--text-main);
 }
 
 /* Header Styles */
@@ -46,7 +47,7 @@ body {
 }
 
 .card-title {
-  font-weight: 600;
+  font-weight: 700;
   font-size: 1.25rem;
   margin-bottom: 0.5rem;
 }
@@ -147,60 +148,48 @@ textarea.form-control {
 
 /* Results Page Styles */
 .score-circle {
-  width: 150px;
-  height: 150px;
+  width: 160px;
+  height: 160px;
   border-radius: 50%;
-  background: conic-gradient(var(--primary-color) calc(var(--score) * 1%), var(--border-color) 0);
+  background: conic-gradient(var(--primary-color) 0%, #e2e8f0 0);
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 2rem;
   position: relative;
+  transition: background 1s ease-in-out;
 }
 
-.score-circle::before {
-  content: "";
-  position: absolute;
-  width: 130px;
-  height: 130px;
+.score-circle-inner {
+  width: 140px;
+  height: 140px;
   background: var(--card-bg);
   border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .score-text {
-  position: relative;
   font-size: 2.5rem;
   font-weight: 700;
   color: var(--text-main);
 }
 
-.skill-badge {
-  display: inline-block;
-  padding: 0.5rem 1rem;
-  border-radius: 9999px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  margin: 0.25rem;
+.hover-lift {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.skill-match {
-  background-color: #dcfce7;
-  color: #166534;
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
-.skill-missing {
-  background-color: #fee2e2;
-  color: #991b1b;
+.progress {
+  border-radius: 999px;
+  overflow: hidden;
 }
 
-.recommendation-item {
-  display: flex;
-  align-items: flex-start;
-  margin-bottom: 1rem;
-}
-
-.recommendation-icon {
-  color: var(--primary-color);
-  margin-right: 1rem;
-  margin-top: 0.25rem;
+.progress-bar {
+  border-radius: 999px;
+  transition: width 1.5s ease-in-out;
 }
