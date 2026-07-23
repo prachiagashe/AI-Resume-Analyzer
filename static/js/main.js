@@ -51,6 +51,9 @@ document.addEventListener('DOMContentLoaded', () => {
             handleFiles(this.files);
         });
 
+
+
+
         function handleFiles(files) {
             if (files.length > 0) {
                 const file = files[0];
@@ -101,9 +104,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+
     // ---------------------------------------------------------
     // Result Page logic (Animations)
     // ---------------------------------------------------------
+    
     
     // Animate circular score
     const scoreCircle = document.querySelector('.score-circle');
