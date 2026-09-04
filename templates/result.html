@@ -86,21 +86,25 @@
                         
                         <div class="mb-3">
                             <div class="d-flex justify-content-between mb-1 small fw-medium">
-                                <span>Technical Skills</span>
-                                <span>85%</span>
+                                <span>Skill Match Rate</span>
+                                <span>{{ skill_match_percentage | default(ats_score) }}%</span>
                             </div>
                             <div class="progress" style="height: 6px;">
-                                <div class="progress-bar bg-success score-bar" data-width="85%"></div>
+                                <div class="progress-bar bg-success score-bar" data-width="{{ skill_match_percentage | default(ats_score) }}%"></div>
                             </div>
                         </div>
                         
                         <div class="mb-3">
                             <div class="d-flex justify-content-between mb-1 small fw-medium">
-                                <span>Soft Skills</span>
-                                <span>60%</span>
+                                <span>Total Required Skills</span>
+                                <span>{{ total_required_skills | default(job_skills|length if job_skills else 0) }}</span>
                             </div>
-                            <div class="progress" style="height: 6px;">
-                                <div class="progress-bar bg-warning score-bar" data-width="60%"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-1 small fw-medium">
+                                <span>Total Matched Skills</span>
+                                <span>{{ total_matched_skills | default(matched_skills|length if matched_skills else 0) }}</span>
                             </div>
                         </div>
                     </div>
@@ -143,10 +147,28 @@
                         <div class="row align-items-center">
                             <div class="col-md-8">
                                 <h4 class="mb-1">ATS Score: {{ ats_score | default(75) }}%</h4>
-                                <p class="text-success fw-bold mb-2">Status: Good Match</p>
-                                <p class="text-muted mb-0">Your resume matches {{ ats_score | default(75) }}% of the job requirements.</p>
+                                <p class="text-success fw-bold mb-2">Status: {% if ats_score >= 70 %}Strong Match{% elif ats_score >= 40 %}Moderate Match{% else %}Needs Improvement{% endif %}</p>
+                                <p class="text-muted mb-1">Your resume matches {{ ats_score | default(75) }}% of the required job skills.</p>
+                                
+                                <div class="mt-3 p-3 bg-white rounded border">
+                                    <div class="row text-center g-2">
+                                        <div class="col-4 border-end">
+                                            <div class="text-muted small">Skill Match Rate</div>
+                                            <div class="fw-bold text-primary fs-6">{{ skill_match_percentage | default(ats_score) }}%</div>
+                                        </div>
+                                        <div class="col-4 border-end">
+                                            <div class="text-muted small">Required Skills</div>
+                                            <div class="fw-bold text-dark fs-6">{{ total_required_skills | default(job_skills|length if job_skills else 0) }}</div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="text-muted small">Matched Skills</div>
+                                            <div class="fw-bold text-success fs-6">{{ total_matched_skills | default(matched_skills|length if matched_skills else 0) }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 {% if similarity_score %}
-                                <p class="text-muted mb-0 small mt-1">Cosine Similarity Score: {{ similarity_score }}</p>
+                                <p class="text-muted mb-0 small mt-2"><i class="fa-solid fa-calculator me-1"></i> Cosine Similarity Score: {{ similarity_score }}</p>
                                 {% endif %}
                             </div>
                             <div class="col-md-4 text-md-end mt-3 mt-md-0">
@@ -162,7 +184,9 @@
                     <!-- Card 2: Matched Skills -->
                     <div class="col-md-6">
                         <div class="custom-card h-100">
-                            <h2 class="card-title h5 mb-3 text-success"><i class="fa-solid fa-circle-check me-2"></i>Matched Skills</h2>
+                            <h2 class="card-title h5 mb-3 text-success">
+                                <i class="fa-solid fa-circle-check me-2"></i>Matched Skills ({{ total_matched_skills | default(matched_skills|length if matched_skills else 0) }})
+                            </h2>
                             <div class="d-flex flex-wrap gap-2">
                                 {% if matched_skills %}
                                     {% for skill in matched_skills %}
@@ -171,11 +195,7 @@
                                     </span>
                                     {% endfor %}
                                 {% else %}
-                                    <span class="badge bg-success text-white px-3 py-2 rounded-pill fw-medium shadow-sm"><i class="fa-solid fa-check me-1"></i> Python</span>
-                                    <span class="badge bg-success text-white px-3 py-2 rounded-pill fw-medium shadow-sm"><i class="fa-solid fa-check me-1"></i> SQL</span>
-                                    <span class="badge bg-success text-white px-3 py-2 rounded-pill fw-medium shadow-sm"><i class="fa-solid fa-check me-1"></i> HTML</span>
-                                    <span class="badge bg-success text-white px-3 py-2 rounded-pill fw-medium shadow-sm"><i class="fa-solid fa-check me-1"></i> CSS</span>
-                                    <span class="badge bg-success text-white px-3 py-2 rounded-pill fw-medium shadow-sm"><i class="fa-solid fa-check me-1"></i> JavaScript</span>
+                                    <span class="text-muted small">No matching skills found</span>
                                 {% endif %}
                             </div>
                         </div>
@@ -184,7 +204,9 @@
                     <!-- Card 3: Missing Skills -->
                     <div class="col-md-6">
                         <div class="custom-card h-100">
-                            <h2 class="card-title h5 mb-3 text-danger"><i class="fa-solid fa-circle-xmark me-2"></i>Missing Skills</h2>
+                            <h2 class="card-title h5 mb-3 text-danger">
+                                <i class="fa-solid fa-circle-xmark me-2"></i>Missing Skills ({{ missing_skills|length if missing_skills else 0 }})
+                            </h2>
                             <div class="d-flex flex-wrap gap-2">
                                 {% if missing_skills %}
                                     {% for skill in missing_skills %}
@@ -193,9 +215,7 @@
                                     </span>
                                     {% endfor %}
                                 {% else %}
-                                    <span class="badge bg-danger text-white px-3 py-2 rounded-pill fw-medium shadow-sm"><i class="fa-solid fa-xmark me-1"></i> React</span>
-                                    <span class="badge bg-danger text-white px-3 py-2 rounded-pill fw-medium shadow-sm"><i class="fa-solid fa-xmark me-1"></i> Machine Learning</span>
-                                    <span class="badge bg-danger text-white px-3 py-2 rounded-pill fw-medium shadow-sm"><i class="fa-solid fa-xmark me-1"></i> Docker</span>
+                                    <span class="text-success small"><i class="fa-solid fa-check-double me-1"></i> No missing skills! Perfect match.</span>
                                 {% endif %}
                             </div>
                         </div>

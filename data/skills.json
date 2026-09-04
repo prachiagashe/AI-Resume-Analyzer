@@ -1,0 +1,63 @@
+{
+  "Programming": [
+    "Python",
+    "Java",
+    "JavaScript",
+    "TypeScript",
+    "C",
+    "C++",
+    "C#",
+    "PHP",
+    "Go",
+    "Ruby"
+  ],
+  "Frontend": [
+    "HTML",
+    "CSS",
+    "React",
+    "Angular",
+    "Vue.js",
+    "Next.js",
+    "Bootstrap"
+  ],
+  "Backend": [
+    "Node.js",
+    "Express.js",
+    "Django",
+    "Flask",
+    "FastAPI",
+    ".NET"
+  ],
+  "Database": [
+    "MySQL",
+    "PostgreSQL",
+    "MongoDB",
+    "Oracle",
+    "SQL Server",
+    "Redis"
+  ],
+  "Data": [
+    "Pandas",
+    "NumPy",
+    "Matplotlib",
+    "Power BI",
+    "Tableau",
+    "Machine Learning",
+    "Deep Learning",
+    "Scikit-Learn"
+  ],
+  "Cloud": [
+    "AWS",
+    "Azure",
+    "GCP",
+    "Docker",
+    "Kubernetes"
+  ],
+  "Tools": [
+    "Git",
+    "GitHub",
+    "Jira",
+    "Figma",
+    "Postman"
+  ]
+}

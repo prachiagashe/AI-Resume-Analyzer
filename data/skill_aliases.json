@@ -1,0 +1,10 @@
+{
+  "javascript": ["javascript", "js", "ecmascript"],
+  "typescript": ["typescript", "ts"],
+  "node.js": ["node.js", "nodejs", "node js"],
+  "react": ["react", "react.js", "reactjs"],
+  "machine learning": ["machine learning", "ml"],
+  "power bi": ["power bi", "powerbi"],
+  "scikit-learn": ["scikit-learn", "sklearn"],
+  "postgresql": ["postgresql", "postgres"]
+}

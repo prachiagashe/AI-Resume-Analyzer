@@ -47,18 +47,26 @@ def analyze():
         clean_resume = preprocess_text(raw_resume_text)
         clean_jd = preprocess_text(job_description)
         
-        # 3. Extract skills using spaCy
-        resume_skills = extract_skills(clean_resume)
-        job_skills = extract_skills(clean_jd)
+        # 3. Extract skills using scalable JSON taxonomy & alias matching engine
+        resume_skills = extract_skills(raw_resume_text)
+        job_skills = extract_skills(job_description)
         
-        # 4. Calculate ATS Score using Scikit-Learn TF-IDF Cosine Similarity
-        ats_data = calculate_ats_score(clean_resume, clean_jd)
-        ats_score = ats_data['score']
+        # 4. Identify matched and missing skills
+        matched_skills = sorted([skill for skill in job_skills if skill in resume_skills])
+        missing_skills = sorted([skill for skill in job_skills if skill not in resume_skills])
+        
+        total_required_skills = len(job_skills)
+        total_matched_skills = len(matched_skills)
+        
+        if total_required_skills > 0:
+            skill_match_percentage = round((total_matched_skills / total_required_skills) * 100, 2)
+        else:
+            skill_match_percentage = 0.0
+            
+        # 5. Calculate ATS Score
+        ats_data = calculate_ats_score(clean_resume, clean_jd, resume_skills, job_skills)
+        ats_score = int(skill_match_percentage) if total_required_skills > 0 else ats_data['score']
         similarity_score = round(ats_data['similarity'], 2)
-        
-        # 5. Identify missing skills
-        matched_skills = [skill for skill in job_skills if skill in resume_skills]
-        missing_skills = [skill for skill in job_skills if skill not in resume_skills]
         
         # 6. Generate Recommendations
         recommendations = generate_recommendations(missing_skills)
@@ -112,7 +120,10 @@ def analyze():
                                missing_skills=missing_skills,
                                recommendations=recommendations,
                                resume_skills=resume_skills,
-                               job_skills=job_skills)
+                               job_skills=job_skills,
+                               total_required_skills=total_required_skills,
+                               total_matched_skills=total_matched_skills,
+                               skill_match_percentage=skill_match_percentage)
                                
     return "Invalid file format. Please upload a PDF.", 400
 
