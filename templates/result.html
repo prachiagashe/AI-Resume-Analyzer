@@ -19,7 +19,9 @@
     <!-- Top Navigation / Header -->
     <nav class="navbar navbar-light bg-white shadow-sm mb-4 py-3">
         <div class="container">
-            <span class="navbar-brand mb-0 h1 fw-bold text-primary"><i class="fa-solid fa-file-signature me-2"></i>AI Resume Analyzer</span>
+            <a class="navbar-brand mb-0 h1 fw-bold text-primary text-decoration-none" href="/">
+                <i class="fa-solid fa-file-signature me-2"></i>AI Resume Analyzer
+            </a>
         </div>
     </nav>
 
@@ -30,7 +32,7 @@
             <!-- LEFT SIDEBAR CARD -->
             <div class="col-lg-4">
                 <div class="custom-card resume-score-card sticky-top" style="top: 20px;">
-                    <h3 class="card-title text-center mb-3">Resume Score</h3>
+                    <h3 class="card-title text-center mb-3">Overall ATS Score</h3>
                     
                     <!-- Circular Score -->
                     <div class="score-circle mx-auto mb-3" data-score="{{ ats_score | default(75) }}">
@@ -39,63 +41,64 @@
                         </div>
                     </div>
                     <div class="text-center mb-3">
-                        <span class="badge {% if ats_score >= 70 %}bg-success{% elif ats_score >= 40 %}bg-warning text-dark{% else %}bg-danger{% endif %} fs-6 px-3 py-2 rounded-pill">
-                            {% if ats_score >= 70 %}Strong Match{% elif ats_score >= 40 %}Moderate Match{% else %}Needs Improvement{% endif %}
+                        <span class="badge {% if ats_score >= 80 %}bg-success{% elif ats_score >= 65 %}bg-info text-dark{% elif ats_score >= 50 %}bg-warning text-dark{% else %}bg-danger{% endif %} fs-6 px-3 py-2 rounded-pill">
+                            {{ analysis_data.match_status | default('MATCH') }}
                         </span>
                     </div>
 
                     <hr class="my-3 border-secondary-subtle">
 
-                    <!-- Skills Score -->
+                    <!-- Weighted Multi-Component Breakdown -->
                     <div class="score-section mb-3">
-                        <h4 class="fs-6 fw-bold text-secondary mb-3 text-uppercase">Skills Score</h4>
+                        <h4 class="fs-6 fw-bold text-secondary mb-3 text-uppercase">Score Breakdown</h4>
                         
                         <div class="mb-2">
                             <div class="d-flex justify-content-between mb-1 small fw-medium">
-                                <span>Skill Match Rate</span>
-                                <span>{{ skill_match_percentage | default(ats_score) }}%</span>
+                                <span>Skills Match (40%)</span>
+                                <span>{{ skill_match_percentage | default(0) }}%</span>
                             </div>
                             <div class="progress" style="height: 6px;">
-                                <div class="progress-bar bg-success score-bar" data-width="{{ skill_match_percentage | default(ats_score) }}%"></div>
-                            </div>
-                        </div>
-                        
-                        <div class="mb-2">
-                            <div class="d-flex justify-content-between mb-1 small fw-medium">
-                                <span>Total Required Skills</span>
-                                <span>{{ total_required_skills | default(job_skills|length if job_skills else 0) }}</span>
+                                <div class="progress-bar bg-primary score-bar" data-width="{{ skill_match_percentage | default(0) }}%"></div>
                             </div>
                         </div>
 
                         <div class="mb-2">
                             <div class="d-flex justify-content-between mb-1 small fw-medium">
-                                <span>Total Matched Skills</span>
-                                <span>{{ total_matched_skills | default(matched_skills|length if matched_skills else 0) }}</span>
+                                <span>Experience Match (25%)</span>
+                                <span>{{ exp_match.score_str | default(100) }}%</span>
+                            </div>
+                            <div class="progress" style="height: 6px;">
+                                <div class="progress-bar bg-success score-bar" data-width="{{ exp_match.score | default(100) }}%"></div>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Resume Quality -->
-                    <div class="score-section">
-                        <h4 class="fs-6 fw-bold text-secondary mb-3 text-uppercase">Resume Quality</h4>
-                        
                         <div class="mb-2">
                             <div class="d-flex justify-content-between mb-1 small fw-medium">
-                                <span>Formatting</span>
-                                <span>90%</span>
+                                <span>Education Match (15%)</span>
+                                <span>{{ edu_match.score | default(100) }}%</span>
                             </div>
                             <div class="progress" style="height: 6px;">
-                                <div class="progress-bar bg-success score-bar" data-width="90%"></div>
+                                <div class="progress-bar bg-info score-bar" data-width="{{ edu_match.score | default(100) }}%"></div>
                             </div>
                         </div>
-                        
+
                         <div class="mb-2">
                             <div class="d-flex justify-content-between mb-1 small fw-medium">
-                                <span>Readability</span>
-                                <span>75%</span>
+                                <span>Job Title Match (10%)</span>
+                                <span>{{ title_match.score | default(90) }}%</span>
                             </div>
                             <div class="progress" style="height: 6px;">
-                                <div class="progress-bar bg-success score-bar" data-width="75%"></div>
+                                <div class="progress-bar bg-secondary score-bar" data-width="{{ title_match.score | default(90) }}%"></div>
+                            </div>
+                        </div>
+
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between mb-1 small fw-medium">
+                                <span>Semantic Match (10%)</span>
+                                <span>{{ analysis_data.semantic.score | default(70) }}%</span>
+                            </div>
+                            <div class="progress" style="height: 6px;">
+                                <div class="progress-bar bg-dark score-bar" data-width="{{ analysis_data.semantic.score | default(70) }}%"></div>
                             </div>
                         </div>
                     </div>
@@ -105,40 +108,31 @@
 
             <!-- MAIN CONTENT AREA -->
             <div class="col-lg-8">
+
+                <!-- Critical Warnings Banner if any requirement fails -->
+                {% if critical_warnings %}
+                <div class="alert alert-warning border-warning shadow-sm mb-4 rounded-3" role="alert">
+                    <h5 class="alert-heading h6 fw-bold mb-2"><i class="fa-solid fa-triangle-exclamation me-2 text-warning"></i> Critical Requirement Warnings</h5>
+                    <ul class="mb-0 ps-3 small text-dark">
+                        {% for warning in critical_warnings %}
+                        <li>{{ warning }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
                 
-                <!-- Card 1: ATS Analysis Report -->
+                <!-- Card 1: ATS Analysis Report & Overview -->
                 <div class="custom-card ats-report-card mb-4 border-top border-primary border-4">
                     <h2 class="card-title h4 mb-3"><i class="fa-solid fa-chart-line text-primary me-2"></i>ATS Analysis Report</h2>
                     <div class="p-3 bg-light rounded-3 border border-light-subtle">
                         <div class="row align-items-center">
                             <div class="col-md-8">
-                                <h4 class="mb-1">ATS Score: {{ ats_score | default(75) }}%</h4>
-                                <p class="text-success fw-bold mb-2">Status: {% if ats_score >= 70 %}Strong Match{% elif ats_score >= 40 %}Moderate Match{% else %}Needs Improvement{% endif %}</p>
-                                <p class="text-muted mb-2 small">Your resume matches {{ ats_score | default(75) }}% of the required job skills.</p>
-                                
-                                <div class="p-2 bg-white rounded border">
-                                    <div class="row text-center g-2">
-                                        <div class="col-4 border-end">
-                                            <div class="text-muted small">Skill Match Rate</div>
-                                            <div class="fw-bold text-primary small">{{ skill_match_percentage | default(ats_score) }}%</div>
-                                        </div>
-                                        <div class="col-4 border-end">
-                                            <div class="text-muted small">Required Skills</div>
-                                            <div class="fw-bold text-dark small">{{ total_required_skills | default(job_skills|length if job_skills else 0) }}</div>
-                                        </div>
-                                        <div class="col-4">
-                                            <div class="text-muted small">Matched Skills</div>
-                                            <div class="fw-bold text-success small">{{ total_matched_skills | default(matched_skills|length if matched_skills else 0) }}</div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {% if similarity_score %}
-                                <p class="text-muted mb-0 small mt-2"><i class="fa-solid fa-calculator me-1"></i> Cosine Similarity Score: {{ similarity_score }}</p>
-                                {% endif %}
+                                <h4 class="mb-1">Weighted ATS Score: {{ ats_score | default(75) }}%</h4>
+                                <p class="text-success fw-bold mb-2">Overall Status: {{ analysis_data.match_status | default('GOOD MATCH') }}</p>
+                                <p class="text-muted mb-2 small">Calculated from Skills (40%), Experience (25%), Education (15%), Job Title (10%), and Semantic Similarity (10%).</p>
                             </div>
                             <div class="col-md-4 text-md-end mt-3 mt-md-0">
-                                <div class="progress" style="height: 10px; background-color: #e2e8f0;">
+                                <div class="progress" style="height: 12px; background-color: #e2e8f0;">
                                     <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary" id="main-progress-bar" role="progressbar" style="width: 0%" data-target="{{ ats_score | default(75) }}"></div>
                                 </div>
                             </div>
@@ -146,13 +140,150 @@
                     </div>
                 </div>
 
-                <!-- Skills Comparison Grid -->
+                <!-- Requirement Summary Table -->
+                <div class="custom-card mb-4">
+                    <h2 class="card-title h5 mb-3"><i class="fa-solid fa-table-list text-primary me-2"></i>Requirement Summary</h2>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Requirement</th>
+                                    <th>JD Requirement</th>
+                                    <th>Resume Candidate</th>
+                                    <th>Score</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="fw-semibold"><i class="fa-solid fa-layer-group text-primary me-2"></i> Skills</td>
+                                    <td>{{ total_required_skills }} required skills</td>
+                                    <td>{{ total_matched_skills }} matched skills</td>
+                                    <td><span class="fw-bold">{{ skill_match_percentage }}%</span></td>
+                                    <td>
+                                        {% if skill_match_percentage >= 70 %}
+                                        <span class="badge bg-success"><i class="fa-solid fa-check"></i></span>
+                                        {% else %}
+                                        <span class="badge bg-warning text-dark"><i class="fa-solid fa-triangle-exclamation"></i></span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-semibold"><i class="fa-solid fa-briefcase text-success me-2"></i> Experience</td>
+                                    <td>{% if exp_match.required_years > 0 %}{{ exp_match.required_years_str }}+ years{% else %}Freshers / Not specified{% endif %}</td>
+                                    <td>{{ exp_match.relevant_years_str }} yrs relevant ({{ exp_match.candidate_years_str }} yrs total)</td>
+                                    <td><span class="fw-bold">{{ exp_match.score_str }}%</span></td>
+                                    <td>
+                                        {% if exp_match.status in ['Requirement Met', 'Eligible', 'Not specified'] %}
+                                        <span class="badge bg-success"><i class="fa-solid fa-check"></i> {{ exp_match.status }}</span>
+                                        {% else %}
+                                        <span class="badge bg-warning text-dark"><i class="fa-solid fa-triangle-exclamation"></i> {{ exp_match.status }}</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-semibold"><i class="fa-solid fa-graduation-cap text-info me-2"></i> Education</td>
+                                    <td>{{ edu_match.required }}</td>
+                                    <td>{{ edu_match.candidate }}</td>
+                                    <td><span class="fw-bold">{{ edu_match.score }}%</span></td>
+                                    <td>
+                                        {% if edu_match.status in ['Requirement Met', 'Not specified'] %}
+                                        <span class="badge bg-success"><i class="fa-solid fa-check"></i> {{ edu_match.status }}</span>
+                                        {% elif edu_match.status == 'Education Gap' %}
+                                        <span class="badge bg-warning text-dark"><i class="fa-solid fa-triangle-exclamation"></i> {{ edu_match.status }}</span>
+                                        {% else %}
+                                        <span class="badge bg-danger"><i class="fa-solid fa-xmark"></i> {{ edu_match.status }}</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-semibold"><i class="fa-solid fa-user-tag text-secondary me-2"></i> Job Title</td>
+                                    <td>{{ title_match.target }}</td>
+                                    <td>{{ title_match.candidate }}</td>
+                                    <td><span class="fw-bold">{{ title_match.score }}%</span></td>
+                                    <td><span class="badge bg-success"><i class="fa-solid fa-check"></i></span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Experience & Education Cards Grid -->
                 <div class="row g-4 mb-4 align-items-start">
-                    <!-- Card 2: Matched Skills -->
+                    <!-- Experience Match Card -->
                     <div class="col-md-6">
                         <div class="custom-card">
                             <h2 class="card-title h5 mb-3 text-success">
-                                <i class="fa-solid fa-circle-check me-2"></i>Matched Skills ({{ total_matched_skills | default(matched_skills|length if matched_skills else 0) }})
+                                <i class="fa-solid fa-briefcase me-2"></i>Experience Match
+                            </h2>
+                            <div class="p-3 bg-light rounded-3 border border-light-subtle mb-3">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="text-muted small">Required Experience:</span>
+                                    <span class="fw-bold small">{% if exp_match.required_years > 0 %}{{ exp_match.required_years_str }}+ years{% else %}Not specified / Freshers{% endif %}</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="text-muted small">Candidate Total Experience:</span>
+                                    <span class="fw-bold small">{{ exp_match.candidate_years_str }} years</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="text-muted small">Relevant Experience:</span>
+                                    <span class="fw-bold text-primary small">{{ exp_match.relevant_years_str }} years</span>
+                                </div>
+                                {% if exp_match.gap_years > 0 %}
+                                <div class="d-flex justify-content-between mb-2 text-danger small">
+                                    <span>Experience Gap:</span>
+                                    <span class="fw-bold">{{ exp_match.gap_years_str }} years</span>
+                                </div>
+                                {% endif %}
+                                <div class="d-flex justify-content-between pt-2 border-top">
+                                    <span class="fw-bold small">Experience Score:</span>
+                                    <span class="fw-bold text-success small">{{ exp_match.score_str }}%</span>
+                                </div>
+                            </div>
+                            <div>
+                                <span class="badge {% if exp_match.score >= 100 %}bg-success{% else %}bg-warning text-dark{% endif %} px-3 py-2 rounded-pill">
+                                    Status: {{ exp_match.status }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Education Match Card -->
+                    <div class="col-md-6">
+                        <div class="custom-card">
+                            <h2 class="card-title h5 mb-3 text-info">
+                                <i class="fa-solid fa-graduation-cap me-2"></i>Education Match
+                            </h2>
+                            <div class="p-3 bg-light rounded-3 border border-light-subtle mb-3">
+                                <div class="mb-2">
+                                    <div class="text-muted small">Required Education:</div>
+                                    <div class="fw-bold small text-dark">{{ edu_match.required }}</div>
+                                </div>
+                                <div class="mb-2">
+                                    <div class="text-muted small">Candidate Degree:</div>
+                                    <div class="fw-bold small text-primary">{{ edu_match.candidate }}</div>
+                                </div>
+                                <div class="d-flex justify-content-between pt-2 border-top">
+                                    <span class="fw-bold small">Education Score:</span>
+                                    <span class="fw-bold text-info small">{{ edu_match.score }}%</span>
+                                </div>
+                            </div>
+                            <div>
+                                <span class="badge {% if edu_match.score >= 100 %}bg-success{% elif edu_match.score >= 50 %}bg-warning text-dark{% else %}bg-danger{% endif %} px-3 py-2 rounded-pill">
+                                    Status: {{ edu_match.status }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Skills Comparison Grid -->
+                <div class="row g-4 mb-4 align-items-start">
+                    <!-- Matched Skills -->
+                    <div class="col-md-6">
+                        <div class="custom-card">
+                            <h2 class="card-title h5 mb-3 text-success">
+                                <i class="fa-solid fa-circle-check me-2"></i>Matched Skills ({{ total_matched_skills }})
                             </h2>
                             <div class="d-flex flex-wrap gap-2">
                                 {% if matched_skills %}
@@ -168,11 +299,11 @@
                         </div>
                     </div>
 
-                    <!-- Card 3: Missing Skills -->
+                    <!-- Missing Skills -->
                     <div class="col-md-6">
                         <div class="custom-card">
                             <h2 class="card-title h5 mb-3 text-danger">
-                                <i class="fa-solid fa-circle-xmark me-2"></i>Missing Skills ({{ missing_skills|length if missing_skills else 0 }})
+                                <i class="fa-solid fa-circle-xmark me-2"></i>Missing Skills ({{ missing_skills|length }})
                             </h2>
                             <div class="d-flex flex-wrap gap-2">
                                 {% if missing_skills %}
@@ -189,7 +320,7 @@
                     </div>
                 </div>
 
-                <!-- Card 4: Suggestions to Improve Resume -->
+                <!-- Recommendations -->
                 <div class="custom-card mb-4">
                     <h2 class="card-title h5 mb-3"><i class="fa-solid fa-lightbulb text-warning me-2"></i>Suggestions to Improve Resume</h2>
                     <div class="row g-3 align-items-start">
@@ -207,41 +338,6 @@
                                 <span class="text-muted small">No suggestions available at this time.</span>
                             </div>
                         {% endif %}
-                    </div>
-                </div>
-
-                <!-- Extracted Skills Section -->
-                <div class="row g-4 mb-4 align-items-start">
-                    <!-- Card 5: Resume Skills -->
-                    <div class="col-md-6">
-                        <div class="custom-card">
-                            <h2 class="card-title h6 text-muted text-uppercase fw-bold mb-3">Extracted Resume Skills</h2>
-                            <div class="d-flex flex-wrap gap-2">
-                                {% if resume_skills %}
-                                    {% for skill in resume_skills %}
-                                    <span class="badge bg-secondary px-2 py-1 fw-normal">{{ skill }}</span>
-                                    {% endfor %}
-                                {% else %}
-                                    <span class="text-muted small">No resume skills extracted</span>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Card 6: Job Requirements -->
-                    <div class="col-md-6">
-                        <div class="custom-card">
-                            <h2 class="card-title h6 text-muted text-uppercase fw-bold mb-3">Job Description Skills</h2>
-                            <div class="d-flex flex-wrap gap-2">
-                                {% if job_skills %}
-                                    {% for skill in job_skills %}
-                                    <span class="badge bg-dark px-2 py-1 fw-normal">{{ skill }}</span>
-                                    {% endfor %}
-                                {% else %}
-                                    <span class="text-muted small">No job skills extracted</span>
-                                {% endif %}
-                            </div>
-                        </div>
                     </div>
                 </div>
 

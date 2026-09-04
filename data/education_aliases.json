@@ -1,0 +1,60 @@
+{
+  "degree_levels": {
+    "doctorate": [
+      "phd",
+      "ph.d",
+      "doctorate",
+      "doctor of philosophy"
+    ],
+    "master": [
+      "master",
+      "m.tech",
+      "m.e.",
+      "mca",
+      "m.sc",
+      "mba",
+      "ma",
+      "ms",
+      "postgraduate"
+    ],
+    "bachelor": [
+      "bachelor",
+      "b.tech",
+      "b.e.",
+      "bca",
+      "b.sc",
+      "bba",
+      "ba",
+      "bs",
+      "graduate",
+      "degree"
+    ]
+  },
+  "fields": {
+    "computer_science": [
+      "computer science",
+      "computer engineering",
+      "computer technology",
+      "software engineering",
+      "cs"
+    ],
+    "information_technology": [
+      "information technology",
+      "information systems",
+      "it"
+    ],
+    "business": [
+      "business administration",
+      "business management",
+      "management",
+      "business",
+      "commerce"
+    ],
+    "engineering": [
+      "engineering",
+      "electrical engineering",
+      "electronics",
+      "mechanical engineering"
+    ]
+  }
+}
