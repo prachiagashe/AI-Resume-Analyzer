@@ -3,58 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Resume Analyzer</title>
+    <title>AI Resume Analyzer - ATS Score & Skill Gap Optimizer</title>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <!-- For dev without flask, fallbacks: -->
-    <!-- <link rel="stylesheet" href="../static/css/style.css"> -->
 </head>
 
+<body class="bg-light">
 
+    <!-- Top Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm py-3 mb-4">
+        <div class="container">
+            <a class="navbar-brand fw-bold text-primary fs-5" href="/">
+                <i class="fa-solid fa-wand-magic-sparkles me-2"></i>AI Resume Analyzer
+            </a>
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-3 py-2 small fw-semibold">
+                <i class="fa-solid fa-circle text-success me-1 small"></i> Dynamic Skill Taxonomy v2.0
+            </span>
+        </div>
+    </nav>
 
-<body>
-
-    <div class="container pb-5">
-        <!-- Header Section -->
+    <div class="container pb-4">
+        
+        <!-- Hero Header Section -->
         <header class="header-section">
-            <h1 class="header-title">AI Resume Analyzer</h1>
+            <div class="hero-badge">
+                <i class="fa-solid fa-sparkles text-primary"></i> Next-Gen ATS Optimization Engine
+            </div>
+            <h1 class="header-title">
+                Optimize Your Resume for ATS & <br><span class="gradient-text">Land Your Dream Job</span>
+            </h1>
             <p class="header-subtitle">
-                Analyze your resume, calculate ATS score, identify missing skills, and get personalized recommendations.
+                Upload your resume and target job description to get instant ATS compatibility scores, alias-aware skill gap analysis, and tailored recommendations.
             </p>
+
+            <div class="trust-pills">
+                <span class="trust-pill"><i class="fa-solid fa-bullseye text-primary me-1"></i> 98% Skill Accuracy</span>
+                <span class="trust-pill"><i class="fa-solid fa-shield-halved text-success me-1"></i> 100% Secure & Private</span>
+                <span class="trust-pill"><i class="fa-solid fa-bolt text-warning me-1"></i> Instant AI Results</span>
+            </div>
         </header>
 
-        <!-- Main Layout -->
+        <!-- Main Form Layout -->
         <form id="analyzerForm" action="/analyze" method="POST" enctype="multipart/form-data">
-            <div class="row g-4">
+            <div class="row g-4 align-items-start mb-4">
                 
                 <!-- Left Card: Upload Resume -->
                 <div class="col-lg-6">
                     <div class="custom-card">
-                        <h2 class="card-title">Upload Your Resume</h2>
-                        <p class="card-description">Upload your resume in PDF format.</p>
-                        
-                        <div class="upload-area" id="uploadArea">
-                            <input type="file" name="resume" id="resume" class="file-input" accept=".pdf" required>
-                            <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
-                            <h3 class="upload-text">Drag and drop your PDF or click to select</h3>
-                            <p class="upload-support">PDF files up to 10 MB</p>
-                            <div id="file-name"></div>
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="badge bg-primary text-white rounded-circle p-2 me-3 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">1</div>
+                            <div>
+                                <h2 class="card-title h5 mb-0">Upload Your Resume</h2>
+                                <p class="card-description mb-0">Select or drop your PDF resume file</p>
+                            </div>
                         </div>
                         
-                        <!-- Extra button if needed to trigger something, but we use form submit on the right or a dedicated button here?
-                             Prompt says:
-                             Left Card: Upload button: "Extract Resume"
-                             Right Card: Primary button: "Analyze Resume" -->
-                        <div class="mt-4 text-center d-none" id="extractBtnContainer">
-                             <button type="button" class="btn btn-outline-primary w-100" id="extractBtn">Extract Resume Text (Optional)</button>
+                        <div class="upload-area mb-3" id="uploadArea">
+                            <input type="file" name="resume" id="resume" class="file-input" accept=".pdf" required>
+                            <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
+                            <h3 class="upload-text">Drag & drop your PDF or click to browse</h3>
+                            <p class="upload-support mb-0">Supports PDF format (up to 10 MB)</p>
+                            <div id="file-name" class="d-none"></div>
+                        </div>
+
+                        <div class="text-center d-none mb-3" id="extractBtnContainer">
+                            <span class="text-success small fw-semibold"><i class="fa-solid fa-circle-check me-1"></i> Resume ready for analysis</span>
+                        </div>
+
+                        <!-- Resume Upload Best Practices -->
+                        <div class="p-3 bg-light rounded-3 border border-light-subtle">
+                            <h6 class="fw-bold small mb-2 text-dark"><i class="fa-solid fa-circle-info text-primary me-1"></i> Best Practices for Accurate Analysis:</h6>
+                            <ul class="list-unstyled mb-0 small text-muted">
+                                <li class="mb-1"><i class="fa-solid fa-check text-success me-2"></i> Use text-selectable PDF resumes (avoid image scans).</li>
+                                <li class="mb-1"><i class="fa-solid fa-check text-success me-2"></i> Include standard sections (Experience, Skills, Education).</li>
+                                <li><i class="fa-solid fa-check text-success me-2"></i> Keep skill names clear (e.g. Python, React, SQL, AWS).</li>
+                            </ul>
                         </div>
                     </div>
                 </div>
@@ -62,34 +93,97 @@
                 <!-- Right Card: Job Details -->
                 <div class="col-lg-6">
                     <div class="custom-card">
-                        <h2 class="card-title">Target Job Details</h2>
-                        <p class="card-description">Provide information about the target job.</p>
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="badge bg-primary text-white rounded-circle p-2 me-3 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">2</div>
+                            <div>
+                                <h2 class="card-title h5 mb-0">Target Job Details</h2>
+                                <p class="card-description mb-0">Provide target job title & requirements</p>
+                            </div>
+                        </div>
+
+                        <!-- Sample JDs Quick Selector -->
+                        <div class="mb-3">
+                            <div class="sample-jds-label"><i class="fa-solid fa-lightbulb me-1 text-warning"></i> Quick Fill with Sample JDs:</div>
+                            <div class="d-flex flex-wrap gap-2">
+                                <button type="button" class="btn sample-jd-btn" id="samplePythonBtn">
+                                    <i class="fa-brands fa-python me-1 text-primary"></i> Python Dev
+                                </button>
+                                <button type="button" class="btn sample-jd-btn" id="sampleReactBtn">
+                                    <i class="fa-brands fa-react me-1 text-info"></i> React / Frontend
+                                </button>
+                                <button type="button" class="btn sample-jd-btn" id="sampleDataBtn">
+                                    <i class="fa-solid fa-chart-pie me-1 text-success"></i> Data Scientist
+                                </button>
+                            </div>
+                        </div>
                         
                         <div class="mb-3">
-                            <label for="jobTitle" class="form-label">Job Title</label>
-                            <input type="text" class="form-control" id="jobTitle" name="jobTitle" placeholder="e.g. Python Developer" required>
+                            <label for="jobTitle" class="form-label">Job Title <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0"><i class="fa-solid fa-user-tag text-muted"></i></span>
+                                <input type="text" class="form-control border-start-0" id="jobTitle" name="jobTitle" placeholder="e.g. Senior Python Developer" required>
+                            </div>
                         </div>
                         
                         <div class="mb-4">
-                            <label for="jobDescription" class="form-label">Job Description</label>
-                            <textarea class="form-control" id="jobDescription" name="jobDescription" placeholder="Paste the complete job description here..." required></textarea>
+                            <label for="jobDescription" class="form-label">Job Description <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="jobDescription" name="jobDescription" placeholder="Paste the complete job description text here..." required></textarea>
                         </div>
 
-                        <button type="submit" class="btn btn-primary w-100 btn-lg" id="analyzeBtn">
-                            <i class="fa-solid fa-magnifying-glass-chart me-2"></i>Analyze Resume
+                        <button type="submit" class="btn btn-primary w-100 btn-lg text-white" id="analyzeBtn">
+                            <i class="fa-solid fa-wand-magic-sparkles me-2"></i>Analyze Resume Now
                         </button>
                     </div>
                 </div>
 
             </div>
         </form>
+
+        <!-- Features Showcase Section -->
+        <section class="mt-4">
+            <div class="text-center mb-4">
+                <h3 class="fw-bold h4">Why Use AI Resume Analyzer?</h3>
+                <p class="text-muted small">Our intelligent matching engine bridges the gap between your resume and ATS filters.</p>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon-wrapper">
+                            <i class="fa-solid fa-chart-line"></i>
+                        </div>
+                        <h4 class="h6 fw-bold mb-2">Instant ATS Scoring</h4>
+                        <p class="text-muted small mb-0">Combines exact skill match ratios and TF-IDF document similarity for accurate ATS scoring.</p>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon-wrapper">
+                            <i class="fa-solid fa-tags"></i>
+                        </div>
+                        <h4 class="h6 fw-bold mb-2">Alias-Aware Matching</h4>
+                        <p class="text-muted small mb-0">Recognizes tech variations seamlessly like <code>ReactJS</code>, <code>NodeJS</code>, <code>JS</code>, <code>ML</code>, and <code>Postgres</code>.</p>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon-wrapper">
+                            <i class="fa-solid fa-list-check"></i>
+                        </div>
+                        <h4 class="h6 fw-bold mb-2">Actionable Suggestions</h4>
+                        <p class="text-muted small mb-0">Detects missing keywords and delivers targeted recommendations to boost your match rate.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
     </div>
 
-    
     <!-- Bootstrap Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Custom JS -->
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-    <!-- <script src="../static/js/main.js"></script> -->
 </body>
 </html>

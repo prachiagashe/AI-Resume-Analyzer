@@ -1,21 +1,28 @@
 document.addEventListener('DOMContentLoaded', () => {
     // ---------------------------------------------------------
-    // Index Page logic (File Upload)
+    // Index Page Logic (File Upload & Sample JDs)
     // ---------------------------------------------------------
     const uploadArea = document.getElementById('uploadArea');
     const fileInput = document.getElementById('resume');
     const fileNameDisplay = document.getElementById('file-name');
     const extractBtnContainer = document.getElementById('extractBtnContainer');
-    const extractBtn = document.getElementById('extractBtn');
+    const analyzerForm = document.getElementById('analyzerForm');
+    const analyzeBtn = document.getElementById('analyzeBtn');
 
-    if (uploadArea) {
+    // Sample JDs Elements
+    const samplePythonBtn = document.getElementById('samplePythonBtn');
+    const sampleReactBtn = document.getElementById('sampleReactBtn');
+    const sampleDataBtn = document.getElementById('sampleDataBtn');
+    const jobTitleInput = document.getElementById('jobTitle');
+    const jobDescriptionInput = document.getElementById('jobDescription');
+
+    if (uploadArea && fileInput) {
         // Prevent default drag behaviors
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
             uploadArea.addEventListener(eventName, preventDefaults, false);
             document.body.addEventListener(eventName, preventDefaults, false);
         });
 
-        
         function preventDefaults(e) {
             e.preventDefault();
             e.stopPropagation();
@@ -30,11 +37,11 @@ document.addEventListener('DOMContentLoaded', () => {
             uploadArea.addEventListener(eventName, unhighlight, false);
         });
 
-        function highlight(e) {
+        function highlight() {
             uploadArea.classList.add('dragover');
         }
 
-        function unhighlight(e) {
+        function unhighlight() {
             uploadArea.classList.remove('dragover');
         }
 
@@ -51,15 +58,12 @@ document.addEventListener('DOMContentLoaded', () => {
             handleFiles(this.files);
         });
 
-
-
-
         function handleFiles(files) {
             if (files.length > 0) {
                 const file = files[0];
                 
                 // Validate file type
-                if (file.type !== 'application/pdf') {
+                if (file.type !== 'application/pdf' && !file.name.endsWith('.pdf')) {
                     alert('Please upload a PDF file.');
                     return;
                 }
@@ -70,9 +74,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     return;
                 }
 
-                fileNameDisplay.innerHTML = `<i class="fa-solid fa-file-pdf me-2"></i>${file.name}`;
+                if (fileNameDisplay) {
+                    fileNameDisplay.classList.remove('d-none');
+                    fileNameDisplay.innerHTML = `<i class="fa-solid fa-file-pdf me-2 text-danger"></i>${file.name} <span class="badge bg-success ms-2">Ready</span>`;
+                }
                 
-                // If using standard form submission, the input.files can't be set from drop easily unless we use DataTransfer
                 if (fileInput.files !== files) {
                     const dataTransfer = new DataTransfer();
                     dataTransfer.items.add(file);
@@ -84,43 +90,55 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         }
-
-        if (extractBtn) {
-            extractBtn.addEventListener('click', () => {
-                if(!fileInput.files.length) {
-                    alert('Please upload a resume first.');
-                    return;
-                }
-                // Simulating extraction 
-                extractBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Extracting...';
-                extractBtn.disabled = true;
-                
-                setTimeout(() => {
-                    extractBtn.innerHTML = '<i class="fa-solid fa-check me-2"></i>Extracted';
-                    extractBtn.classList.remove('btn-outline-primary');
-                    extractBtn.classList.add('btn-success');
-                }, 1500);
-            });
-        }
     }
 
+    // ---------------------------------------------------------
+    // Quick Fill Sample Job Descriptions
+    // ---------------------------------------------------------
+    if (samplePythonBtn && jobTitleInput && jobDescriptionInput) {
+        samplePythonBtn.addEventListener('click', () => {
+            jobTitleInput.value = 'Python Developer';
+            jobDescriptionInput.value = 'We are looking for a Python Developer proficient in Django, Flask, FastAPI, SQL, MySQL, PostgreSQL, Docker, AWS, Git, and REST APIs. Experience with Machine Learning, Pandas, and NumPy is a plus.';
+        });
+    }
+
+    if (sampleReactBtn && jobTitleInput && jobDescriptionInput) {
+        sampleReactBtn.addEventListener('click', () => {
+            jobTitleInput.value = 'Frontend React Developer';
+            jobDescriptionInput.value = 'Seeking a skilled Frontend Developer experienced in JavaScript, TypeScript, React, Next.js, HTML, CSS, Bootstrap, Node.js, Express.js, Git, and GitHub.';
+        });
+    }
+
+    if (sampleDataBtn && jobTitleInput && jobDescriptionInput) {
+        sampleDataBtn.addEventListener('click', () => {
+            jobTitleInput.value = 'Data Scientist';
+            jobDescriptionInput.value = 'Looking for a Data Scientist skilled in Python, SQL, Machine Learning, Deep Learning, Pandas, NumPy, Matplotlib, Power BI, Tableau, and Scikit-Learn.';
+        });
+    }
 
     // ---------------------------------------------------------
-    // Result Page logic (Animations)
+    // Form Submit Loading Indicator
     // ---------------------------------------------------------
-    
-    
-    // Animate circular score
+    if (analyzerForm && analyzeBtn) {
+        analyzerForm.addEventListener('submit', (e) => {
+            if (analyzerForm.checkValidity()) {
+                analyzeBtn.disabled = true;
+                analyzeBtn.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Analyzing Resume with AI...`;
+            }
+        });
+    }
+
+    // ---------------------------------------------------------
+    // Result Page Logic (Score & Progress Animations)
+    // ---------------------------------------------------------
     const scoreCircle = document.querySelector('.score-circle');
     const scoreText = document.getElementById('animated-score');
     
     if (scoreCircle && scoreText) {
-        // Read score from data attribute
         const targetScore = parseInt(scoreCircle.getAttribute('data-score'), 10) || 0;
         let currentScore = 0;
         
-        // Duration logic
-        const duration = 1500; // ms
+        const duration = 1500;
         const intervalTime = 20;
         const steps = duration / intervalTime;
         const increment = targetScore / steps;
@@ -132,17 +150,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 clearInterval(timer);
             }
             
-            // Update text
             scoreText.textContent = Math.round(currentScore) + '%';
             
-            // Update circle gradient
             const degrees = (currentScore / 100) * 360;
             scoreCircle.style.background = `conic-gradient(var(--primary-color) ${degrees}deg, #e2e8f0 0deg)`;
             
         }, intervalTime);
     }
 
-    // Animate linear progress bars
     const mainProgressBar = document.getElementById('main-progress-bar');
     if (mainProgressBar) {
         setTimeout(() => {
@@ -160,7 +175,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     bar.style.width = width;
                 }
             });
-        }, 300); // slight delay for visual effect
+        }, 300);
     }
 
 });
