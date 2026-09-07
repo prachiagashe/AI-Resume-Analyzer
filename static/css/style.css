@@ -132,7 +132,8 @@ body {
   position: relative;
 }
 
-.upload-area:hover, .upload-area.dragover {
+.upload-area:hover,
+.upload-area.dragover {
   border-color: var(--primary-color);
   background-color: #eff6ff;
   transform: translateY(-1px);
@@ -362,20 +363,21 @@ textarea.form-control {
   .header-title {
     font-size: 2rem;
   }
-  
+
   .main-analysis {
     grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 768px) {
+
   .skills-comparison,
   .extracted-skills-section,
   .suggestions-grid,
   .action-buttons {
     grid-template-columns: 1fr;
   }
-  
+
   .sticky-top {
     position: static !important;
   }
